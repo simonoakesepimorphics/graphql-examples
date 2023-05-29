@@ -1,0 +1,28 @@
+schema {
+    query: Query
+}
+
+type Query {
+    BookList: [Book!]!
+}
+
+type Book {
+    isbn: String!
+    title: String!
+    pages: Int!
+    description: String
+    author: Person!
+    reviews: [Review!]!
+}
+
+type Person {
+    name: String!
+    email: String
+    associates: [Person!]!
+}
+
+type Review {
+    rating: Int!
+    timestamp: String!
+    comments: [String!]!
+}
