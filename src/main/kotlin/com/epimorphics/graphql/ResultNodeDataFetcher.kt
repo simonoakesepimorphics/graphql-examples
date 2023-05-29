@@ -16,21 +16,26 @@ class ResultNodeDataFetcher: DataFetcher<Any?> {
      * This implementation uses the field definition provided by the [DataFetchingEnvironment] to determine the multiplicity and optionality of result values.
      */
     override fun get(env: DataFetchingEnvironment): Any? {
+        // Obtain the source node and the GraphQL field definition.
         val source = env.getSource<ResultNode>()
         val field = env.fieldDefinition
+
+        // Obtain the field values.
         val valueNodes = source.get(field.name)
 
         return formatValues(field.type, valueNodes)
     }
 
     private fun formatValues(type: GraphQLType, nodes: List<ResultNode>): Any? {
-        val nullableType = GraphQLTypeUtil.unwrapNonNull(type)
+        val nullableType = GraphQLTypeUtil.unwrapNonNull(type) // e.g. Book! -> Book
         return if (nullableType is GraphQLList) {
-            val singularType = GraphQLTypeUtil.unwrapNonNull(nullableType.wrappedType)
+            // Field is list-valued.
+            val singularType = GraphQLTypeUtil.unwrapNonNull(nullableType.wrappedType) // e.g. [Book!] -> Book
             nodes.map { node ->
                 formatSingleValue(singularType, node)
             }
         } else {
+            // Field is single-valued.
             formatSingleValue(nullableType, nodes)
         }
     }
